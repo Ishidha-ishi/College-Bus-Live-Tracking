@@ -1,0 +1,6 @@
+{
+  "name": "Bus Live Tracking",
+  "description": "Real-time bus tracking mobile platform for students and staff with live GPS map locations, push delay notifications, incident feedback, travel audit logs, and fee reminders for administration.",
+  "requestFramePermissions": ["geolocation", "notifications"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
