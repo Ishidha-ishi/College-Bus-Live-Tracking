@@ -3,7 +3,7 @@ import { useApp } from '../context/AppContext';
 import { 
   Bus, Bell, Volume2, VolumeX, Shield, GraduationCap, 
   Briefcase, AlertTriangle, RefreshCw, ChevronDown, CheckCheck,
-  Smartphone, Monitor, Radio, Compass, UserPlus, Sparkles
+  Smartphone, Monitor, Radio, Compass, UserPlus, Sparkles, KeyRound, LogOut
 } from 'lucide-react';
 
 export const Navbar: React.FC = () => {
@@ -23,7 +23,8 @@ export const Navbar: React.FC = () => {
     isSimulating,
     setIsSimulating,
     selectedBusId,
-    setIsRegistrationOpen
+    setIsRegistrationOpen,
+    logout
   } = useApp();
 
   const [showNotifMenu, setShowNotifMenu] = useState(false);
@@ -61,20 +62,32 @@ export const Navbar: React.FC = () => {
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-extrabold text-base sm:text-lg tracking-tight text-white flex items-center gap-1.5">
-                BusTrack <span className="text-amber-400">Live</span>
+              <span className="font-black text-base sm:text-lg tracking-tight text-white flex items-center gap-1">
+                BUS<span className="text-amber-400">LIVE</span>
               </span>
-              <span className="inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+              <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
                 <span className={`w-1.5 h-1.5 rounded-full bg-emerald-400 ${isSimulating ? 'animate-pulse' : ''}`}></span>
                 {isSimulating ? 'GPS LIVE' : 'PAUSED'}
               </span>
             </div>
-            <p className="text-[11px] text-slate-400 hidden sm:block">Campus Transport & Safety Management</p>
+            <p className="text-[10px] text-slate-400 hidden sm:block">Your Campus. Your Bus. Live.</p>
           </div>
         </div>
 
         {/* Center: View Switcher Tabs */}
         <div className="hidden md:flex items-center bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs">
+          <button
+            id="view-mode-login"
+            onClick={() => setActiveViewMode('login')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium transition-all ${
+              activeViewMode === 'login'
+                ? 'bg-amber-500 text-slate-950 shadow-sm font-semibold'
+                : 'text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            <KeyRound className="w-3.5 h-3.5" />
+            Login Portal
+          </button>
           <button
             id="view-mode-mobile"
             onClick={() => setActiveViewMode('mobile')}
@@ -271,16 +284,28 @@ export const Navbar: React.FC = () => {
                   ))}
                 </div>
 
-                <div className="pt-2 mt-2 border-t border-slate-800 flex items-center justify-between px-2">
+                <div className="pt-2 mt-2 border-t border-slate-800 flex flex-col gap-1.5 px-1">
                   <button
                     onClick={() => {
-                      resetAllData();
+                      logout();
                       setShowRoleMenu(false);
                     }}
-                    className="text-[11px] text-slate-400 hover:text-rose-400 flex items-center gap-1 transition"
+                    className="w-full flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-xl text-xs font-semibold text-rose-300 bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 transition cursor-pointer"
                   >
-                    <RefreshCw className="w-3 h-3" /> Reset Demo Data
+                    <LogOut className="w-3.5 h-3.5" />
+                    <span>Sign Out / Return to Login</span>
                   </button>
+                  <div className="flex items-center justify-between px-1 pt-1">
+                    <button
+                      onClick={() => {
+                        resetAllData();
+                        setShowRoleMenu(false);
+                      }}
+                      className="text-[11px] text-slate-400 hover:text-rose-400 flex items-center gap-1 transition cursor-pointer"
+                    >
+                      <RefreshCw className="w-3 h-3" /> Reset Demo Data
+                    </button>
+                  </div>
                 </div>
               </div>
             )}

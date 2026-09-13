@@ -4,11 +4,12 @@ import { Navbar } from './components/Navbar';
 import { StudentStaffMobileView } from './components/StudentStaffMobileView';
 import { AdminDashboard } from './components/AdminDashboard';
 import { DriverConsole } from './components/DriverConsole';
+import { LoginPage } from './components/LoginPage';
 import { NotificationToast } from './components/NotificationToast';
 import { RealTimeRegistrationModal } from './components/RealTimeRegistrationModal';
 import { 
   Smartphone, Monitor, Radio, AlertTriangle, 
-  GraduationCap, Briefcase, Shield, Compass, Sparkles, UserPlus 
+  GraduationCap, Briefcase, Shield, Compass, Sparkles, UserPlus, KeyRound, LogOut, Code2 
 } from 'lucide-react';
 
 const MainContent: React.FC = () => {
@@ -42,7 +43,12 @@ const MainContent: React.FC = () => {
               return (
                 <button
                   key={u.id}
-                  onClick={() => setCurrentUser(u)}
+                  onClick={() => {
+                    setCurrentUser(u);
+                    if (u.role === 'admin') setActiveViewMode('admin_portal');
+                    else if (u.role === 'driver') setActiveViewMode('driver_console');
+                    else setActiveViewMode('mobile');
+                  }}
                   className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold transition whitespace-nowrap ${
                     isSelected
                       ? 'bg-amber-500 text-slate-950 shadow'
@@ -65,8 +71,19 @@ const MainContent: React.FC = () => {
             })}
           </div>
 
-          {/* Quick Action Triggers for Grading / Presentation */}
+          {/* Quick Action Triggers for Testing / Presentation */}
           <div className="flex items-center gap-2">
+            <button
+              onClick={() => setActiveViewMode('login')}
+              className={`px-2.5 py-1 rounded-lg text-[11px] font-bold flex items-center gap-1.5 transition cursor-pointer shadow-sm ${
+                activeViewMode === 'login'
+                  ? 'bg-amber-500 text-slate-950 shadow-md ring-1 ring-amber-400'
+                  : 'bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30'
+              }`}
+            >
+              <KeyRound className="w-3.5 h-3.5" />
+              <span>Login Page</span>
+            </button>
             <button
               onClick={() => setIsRegistrationOpen(true)}
               className="px-2.5 py-1 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 text-[11px] font-bold flex items-center gap-1.5 transition cursor-pointer shadow-sm"
@@ -87,12 +104,26 @@ const MainContent: React.FC = () => {
             >
               <span>Month-End Notice</span>
             </button>
+            <a
+              href="/vanilla.html"
+              target="_blank"
+              rel="noreferrer"
+              className="px-2.5 py-1 rounded-lg bg-sky-500/15 hover:bg-sky-500/25 text-sky-300 border border-sky-500/30 text-[11px] font-bold flex items-center gap-1.5 transition cursor-pointer"
+              title="Open Pure HTML, CSS & Vanilla JavaScript Version"
+            >
+              <Code2 className="w-3.5 h-3.5 text-sky-400" />
+              <span>Pure HTML/CSS/JS Mode</span>
+            </a>
           </div>
         </div>
       </aside>
 
       {/* Main View Area */}
       <main className="flex-1 p-3 sm:p-6 flex flex-col justify-start">
+        {activeViewMode === 'login' && (
+          <LoginPage />
+        )}
+
         {activeViewMode === 'mobile' && (
           <div className="w-full flex flex-col items-center justify-center my-auto">
             {/* Passenger App View Frame */}

@@ -34,10 +34,12 @@ interface AppContextType {
   setIsTrafficEnabled: (val: boolean) => void;
   
   // View controls
-  activeViewMode: 'mobile' | 'admin_portal' | 'driver_console';
-  setActiveViewMode: (mode: 'mobile' | 'admin_portal' | 'driver_console') => void;
+  activeViewMode: 'login' | 'mobile' | 'admin_portal' | 'driver_console';
+  setActiveViewMode: (mode: 'login' | 'mobile' | 'admin_portal' | 'driver_console') => void;
   activeMobileTab: 'map' | 'pass' | 'fees' | 'incidents' | 'alerts';
   setActiveMobileTab: (tab: 'map' | 'pass' | 'fees' | 'incidents' | 'alerts') => void;
+  login: (user: User, token?: string) => void;
+  logout: () => void;
   
   // Real-Time Registration Modal Control
   isRegistrationOpen: boolean;
@@ -135,11 +137,31 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [isSimulating, setIsSimulating] = useState<boolean>(true);
   const [simSpeed, setSimSpeed] = useState<number>(1);
   const [isTrafficEnabled, setIsTrafficEnabled] = useState<boolean>(true);
-  const [activeViewMode, setActiveViewMode] = useState<'mobile' | 'admin_portal' | 'driver_console'>('mobile');
+  const [activeViewMode, setActiveViewMode] = useState<'login' | 'mobile' | 'admin_portal' | 'driver_console'>('login');
   const [activeMobileTab, setActiveMobileTab] = useState<'map' | 'pass' | 'fees' | 'incidents' | 'alerts'>('map');
   const [isRegistrationOpen, setIsRegistrationOpen] = useState<boolean>(false);
   const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
   const [activeToast, setActiveToast] = useState<PushNotification | null>(null);
+
+  const login = useCallback((user: User, token?: string) => {
+    if (token) {
+      localStorage.setItem('buslive_auth_token', token);
+    }
+    setCurrentUserState(user);
+    localStorage.setItem(STORAGE_KEYS.CURRENT_USER_ID, user.id);
+    if (user.role === 'admin') {
+      setActiveViewMode('admin_portal');
+    } else if (user.role === 'driver') {
+      setActiveViewMode('driver_console');
+    } else {
+      setActiveViewMode('mobile');
+    }
+  }, []);
+
+  const logout = useCallback(() => {
+    localStorage.removeItem('buslive_auth_token');
+    setActiveViewMode('login');
+  }, []);
 
   // Sync state to local storage
   useEffect(() => {
@@ -660,6 +682,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         setActiveViewMode,
         activeMobileTab,
         setActiveMobileTab,
+        login,
+        logout,
         isRegistrationOpen,
         setIsRegistrationOpen,
         registerUserRealTime,

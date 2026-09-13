@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BUSLIVE - Campus Bus Tracker (Pure HTML, CSS & JavaScript)</title>
+  <style>
+    /* ==========================================================================
+       PURE CSS3 STYLESHEET (NO EXTERNAL FRAMEWORK OR LIBRARIES REQUIRED)
+       ========================================================================== */
+    :root {
+      --bg-main: #020617;
+      --bg-card: #0f172a;
+      --bg-card-hover: #1e293b;
+      --border-color: #334155;
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --accent-amber: #f59e0b;
+      --accent-amber-glow: rgba(245, 158, 11, 0.15);
+      --accent-emerald: #10b981;
+      --accent-rose: #f43f5e;
+      --accent-sky: #0ea5e9;
+      --font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-primary);
+      font-family: var(--font-family);
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header & Navigation Bar */
+    header {
+      background-color: var(--bg-card);
+      border-bottom: 1px solid var(--border-color);
+      padding: 12px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-badge {
+      background-color: var(--accent-amber);
+      color: #020617;
+      font-weight: 900;
+      font-size: 14px;
+      padding: 4px 8px;
+      border-radius: 6px;
+      letter-spacing: 0.5px;
+    }
+
+    .brand-title {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+    .brand-title span {
+      color: var(--accent-amber);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background-color: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: var(--accent-emerald);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 999px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: var(--accent-emerald);
+      animation: pulse 1.8s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 0.4; transform: scale(0.9); }
+      50% { opacity: 1; transform: scale(1.1); }
+      100% { opacity: 0.4; transform: scale(0.9); }
+    }
+
+    /* Main Container */
+    main {
+      flex: 1;
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 24px 16px;
+    }
+
+    /* Sub-header Banner */
+    .banner {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .banner h1 {
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--text-primary);
+    }
+
+    .banner p {
+      color: var(--text-secondary);
+      font-size: 13px;
+      margin-top: 4px;
+    }
+
+    .mode-tag {
+      display: inline-block;
+      margin-top: 8px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      font-size: 11px;
+      color: var(--accent-amber);
+      padding: 3px 12px;
+      border-radius: 999px;
+      font-weight: 600;
+    }
+
+    /* Grid Layout */
+    .grid-container {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+
+    @media (min-width: 900px) {
+      .grid-container {
+        grid-template-columns: 1.2fr 0.8fr;
+      }
+    }
+
+    /* Cards */
+    .card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .card-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    /* Role Switcher Tabs */
+    .role-tabs {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .role-btn {
+      background-color: #020617;
+      border: 1px solid var(--border-color);
+      color: var(--text-secondary);
+      padding: 8px 4px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s ease;
+    }
+
+    .role-btn:hover {
+      background-color: var(--bg-card-hover);
+      color: var(--text-primary);
+    }
+
+    .role-btn.active {
+      background-color: var(--accent-amber-glow);
+      border-color: var(--accent-amber);
+      color: var(--accent-amber);
+    }
+
+    /* Forms */
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 10px 14px;
+      background-color: #020617;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      color: var(--text-primary);
+      font-size: 13px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .form-control:focus {
+      border-color: var(--accent-amber);
+      box-shadow: 0 0 0 2px var(--accent-amber-glow);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 11px 16px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      transition: background-color 0.2s;
+    }
+
+    .btn-primary {
+      background-color: var(--accent-amber);
+      color: #020617;
+    }
+
+    .btn-primary:hover {
+      background-color: #d97706;
+    }
+
+    .btn-sm {
+      width: auto;
+      padding: 6px 12px;
+      font-size: 11px;
+    }
+
+    /* Quick Fill Buttons */
+    .quick-creds {
+      margin-top: 14px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .pill-btn {
+      background-color: #020617;
+      border: 1px solid var(--border-color);
+      color: var(--text-secondary);
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .pill-btn:hover {
+      border-color: var(--text-primary);
+      color: var(--text-primary);
+    }
+
+    /* Live Telemetry Panel */
+    .telemetry-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid #1e293b;
+      font-size: 13px;
+    }
+
+    .telemetry-row:last-child {
+      border-bottom: none;
+    }
+
+    .telemetry-label {
+      color: var(--text-muted);
+    }
+
+    .telemetry-value {
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    /* Digital Pass Display */
+    .bus-pass {
+      background: linear-gradient(145deg, #0f172a, #1e293b);
+      border: 2px dashed var(--border-color);
+      border-radius: 14px;
+      padding: 16px;
+      margin-top: 16px;
+    }
+
+    .bus-pass-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .pass-tag {
+      background-color: rgba(245, 158, 11, 0.2);
+      color: var(--accent-amber);
+      font-size: 10px;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+
+    /* Live Canvas Map */
+    #busMapCanvas {
+      width: 100%;
+      height: 240px;
+      background-color: #020617;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      display: block;
+      margin-top: 12px;
+    }
+
+    /* Alert Boxes */
+    .alert {
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 12px;
+      margin-bottom: 12px;
+      display: none;
+    }
+
+    .alert-success {
+      background-color: rgba(16, 185, 129, 0.15);
+      border: 1px solid var(--accent-emerald);
+      color: #6ee7b7;
+    }
+
+    .alert-error {
+      background-color: rgba(244, 63, 94, 0.15);
+      border: 1px solid var(--accent-rose);
+      color: #fda4af;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: var(--text-muted);
+      font-size: 12px;
+      border-top: 1px solid var(--border-color);
+      margin-top: auto;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==========================================================================
+       SEMANTIC HTML5 MARKUP
+       ========================================================================== -->
+  <header>
+    <div class="brand">
+      <span class="brand-badge">BUS</span>
+      <span class="brand-title">LIVE <span>PORTAL</span></span>
+    </div>
+    <div class="header-actions">
+      <div class="status-pill">
+        <span class="status-dot"></span>
+        <span>Telemetry Stream Active</span>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="banner">
+      <h1>Salem Campus Bus Tracking Portal</h1>
+      <p>Pure HTML5, CSS3 and Vanilla JavaScript Architecture</p>
+      <span class="mode-tag">Native DOM &amp; Fetch API Execution (No Framework Required)</span>
+    </section>
+
+    <!-- Main Two-Column Layout -->
+    <div class="grid-container">
+
+      <!-- Left Column: Authentication & Control -->
+      <article class="card">
+        <div class="card-header">
+          <h2 class="card-title" id="authTitle">Institutional User Authentication</h2>
+          <span style="font-size: 11px; color: var(--text-muted);" id="userRoleBadge">Role: Student</span>
+        </div>
+
+        <!-- Role Switcher -->
+        <nav class="role-tabs" aria-label="Select institutional role">
+          <button class="role-btn active" onclick="switchRole('student')">Student</button>
+          <button class="role-btn" onclick="switchRole('staff')">Staff</button>
+          <button class="role-btn" onclick="switchRole('driver')">Driver</button>
+          <button class="role-btn" onclick="switchRole('admin')">Admin</button>
+        </nav>
+
+        <!-- Feedback Notification Alerts -->
+        <div id="alertSuccess" class="alert alert-success" role="alert"></div>
+        <div id="alertError" class="alert alert-error" role="alert"></div>
+
+        <!-- Login Form -->
+        <form id="loginForm" onsubmit="handleLoginSubmit(event)">
+          <div class="form-group">
+            <label for="identifierInput" id="identifierLabel">Register Number or Campus Email</label>
+            <input 
+              type="text" 
+              id="identifierInput" 
+              class="form-control" 
+              placeholder="710023104042" 
+              value="710023104042" 
+              required 
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="passwordInput">Password / Security PIN</label>
+            <input 
+              type="password" 
+              id="passwordInput" 
+              class="form-control" 
+              placeholder="Enter password" 
+              value="student123" 
+              required 
+            />
+          </div>
+
+          <button type="submit" class="btn btn-primary" id="loginButton">
+            Sign In to Fleet Telemetry
+          </button>
+        </form>
+
+        <!-- Demo Credentials Helper -->
+        <div style="margin-top: 18px;">
+          <span style="font-size: 11px; color: var(--text-muted); font-weight: 600;">One-Click Quick Fill Credentials:</span>
+          <div class="quick-creds">
+            <button type="button" class="pill-btn" onclick="fillCreds('student', '710023104042', 'student123')">Student (Karthik)</button>
+            <button type="button" class="pill-btn" onclick="fillCreds('admin', 'admin@campus.edu.in', 'admin123')">Admin (Dr. Senthil)</button>
+            <button type="button" class="pill-btn" onclick="fillCreds('driver', 'murugan@driver.campus.edu.in', 'driver123')">Driver (Murugan)</button>
+            <button type="button" class="pill-btn" onclick="fillCreds('staff', 'arvind@faculty.campus.edu.in', 'staff123')">Staff (Dr. Arvind)</button>
+          </div>
+        </div>
+
+        <!-- Digital Bus Pass Card View (Rendered by JS upon login) -->
+        <div class="bus-pass" id="busPassContainer">
+          <div class="bus-pass-header">
+            <span class="pass-tag" id="passBadge">STUDENT TRAVEL PASS</span>
+            <span style="font-size: 11px; color: var(--accent-emerald); font-weight: bold;" id="passStatus">ACTIVE / PAID</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <h3 style="font-size: 16px; font-weight: bold; color: white;" id="passUserName">Karthik Selvam</h3>
+              <p style="font-size: 11px; color: var(--text-secondary);" id="passUserSubtitle">Reg: 710023104042 • CSE 3rd Year</p>
+              <p style="font-size: 11px; color: var(--accent-amber); margin-top: 4px;" id="passRouteInfo">Route 01 (Hasthampatti) • Bus 01</p>
+            </div>
+            <div style="background: white; padding: 6px; border-radius: 6px; text-align: center;">
+              <!-- Simulated QR Code created with Canvas or ASCII SVG -->
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect width="5" height="5" x="3" y="3" rx="1"/>
+                <rect width="5" height="5" x="16" y="3" rx="1"/>
+                <rect width="5" height="5" x="3" y="16" rx="1"/>
+                <path d="M21 16h-3a2 2 0 0 0-2 2v3"/>
+                <path d="M21 21v.01"/>
+                <path d="M12 7v3a2 2 0 0 1-2 2H7"/>
+                <path d="M3 12h.01"/>
+                <path d="M12 3h.01"/>
+                <path d="M12 16v.01"/>
+                <path d="M16 12h1"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- Right Column: Live GPS Telemetry & Canvas Map -->
+      <article class="card">
+        <div class="card-header">
+          <h2 class="card-title">Live Bus Telemetry &amp; Radar</h2>
+          <span style="font-size: 11px; color: var(--accent-amber);" id="gpsStatusText">GPS Connected</span>
+        </div>
+
+        <!-- Real-Time Metrics -->
+        <div class="telemetry-row">
+          <span class="telemetry-label">Active Bus:</span>
+          <span class="telemetry-value" id="metricBus">Bus 01 (TN 54 AB 1234)</span>
+        </div>
+        <div class="telemetry-row">
+          <span class="telemetry-label">Route:</span>
+          <span class="telemetry-value" id="metricRoute">New Bus Stand ➔ Salem Campus</span>
+        </div>
+        <div class="telemetry-row">
+          <span class="telemetry-label">Live Speed:</span>
+          <span class="telemetry-value" id="metricSpeed" style="color: var(--accent-emerald);">38 km/h</span>
+        </div>
+        <div class="telemetry-row">
+          <span class="telemetry-label">Next Stop:</span>
+          <span class="telemetry-value" id="metricNextStop">Hasthampatti Circle (ETA: 4 mins)</span>
+        </div>
+        <div class="telemetry-row">
+          <span class="telemetry-label">Passenger Occupancy:</span>
+          <span class="telemetry-value" id="metricOccupancy">42 / 50 seats (84%)</span>
+        </div>
+
+        <!-- HTML5 Canvas Map -->
+        <div style="margin-top: 14px;">
+          <span style="font-size: 11px; color: var(--text-muted); font-weight: 600;">HTML5 Radar Canvas (Live Waypoint Animation):</span>
+          <canvas id="busMapCanvas" width="400" height="240"></canvas>
+        </div>
+
+        <div style="margin-top: 14px; display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-size: 11px; color: var(--text-muted);">GPS Polling Interval: 2.0s</span>
+          <button type="button" class="pill-btn" onclick="toggleSimSpeed()">Toggle Speed (1x / 2x)</button>
+        </div>
+      </article>
+
+    </div>
+  </main>
+
+  <footer>
+    <p>Salem Engineering &amp; Technology Campus • BUSLIVE Transport Portal</p>
+    <p style="margin-top: 4px; font-size: 11px;">Built using Pure HTML5, CSS3 and Vanilla ECMAScript JavaScript.</p>
+  </footer>
+
+  <!-- ==========================================================================
+       VANILLA JAVASCRIPT LOGIC (NO BUNDLER, NO REACT, PURE NATIVE BROWSER APIs)
+       ========================================================================== -->
+  <script>
+    // State Variables
+    let currentRole = 'student';
+    let simulationSpeed = 1;
+    let busPosition = { x: 50, y: 120, progress: 0.1 };
+
+    // Role Metadata Definitions
+    const roleConfig = {
+      student: {
+        label: 'Register Number or Campus Email',
+        defaultId: '710023104042',
+        defaultPass: 'student123',
+        title: 'Student Travel Pass',
+        badge: 'Role: Student & Parent'
+      },
+      staff: {
+        label: 'Staff ID or Official Email',
+        defaultId: 'arvind@faculty.campus.edu.in',
+        defaultPass: 'staff123',
+        title: 'Faculty Corridor Pass',
+        badge: 'Role: Faculty & Staff'
+      },
+      driver: {
+        label: 'Driver ID or Registered Phone',
+        defaultId: 'murugan@driver.campus.edu.in',
+        defaultPass: 'driver123',
+        title: 'Pilot Trip Console',
+        badge: 'Role: Bus Driver'
+      },
+      admin: {
+        label: 'Administrator Official Email',
+        defaultId: 'admin@campus.edu.in',
+        defaultPass: 'admin123',
+        title: 'Fleet Bureau Control',
+        badge: 'Role: Transport Controller'
+      }
+    };
+
+    // Switch Role Function
+    function switchRole(role) {
+      currentRole = role;
+      
+      // Update Tab Styles
+      const buttons = document.querySelectorAll('.role-btn');
+      buttons.forEach(btn => {
+        if (btn.innerText.toLowerCase().includes(role)) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+
+      // Update Form Values
+      const config = roleConfig[role];
+      document.getElementById('identifierLabel').innerText = config.label;
+      document.getElementById('identifierInput').value = config.defaultId;
+      document.getElementById('passwordInput').value = config.defaultPass;
+      document.getElementById('userRoleBadge').innerText = config.badge;
+      document.getElementById('passBadge').innerText = config.title.toUpperCase();
+
+      // Clear alerts
+      hideAlerts();
+    }
+
+    // Quick Fill Function
+    function fillCreds(role, id, pass) {
+      switchRole(role);
+      document.getElementById('identifierInput').value = id;
+      document.getElementById('passwordInput').value = pass;
+    }
+
+    // Form Submission with native Fetch API
+    async function handleLoginSubmit(event) {
+      event.preventDefault();
+      hideAlerts();
+
+      const id = document.getElementById('identifierInput').value.trim();
+      const pass = document.getElementById('passwordInput').value;
+      const submitBtn = document.getElementById('loginButton');
+
+      submitBtn.innerText = 'Verifying Credentials...';
+      submitBtn.disabled = true;
+
+      try {
+        // Native Fetch API calling Express backend
+        const response = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: id, password: pass, role: currentRole })
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          showAlert('alertSuccess', `Welcome back, ${data.user ? data.user.name : 'Authorized User'}! Authenticated successfully.`);
+          
+          // Update pass card
+          if (data.user) {
+            document.getElementById('passUserName').innerText = data.user.name;
+            document.getElementById('passUserSubtitle').innerText = `${data.user.role.toUpperCase()} • ${data.user.department || 'Salem Campus'}`;
+          }
+        } else {
+          // Fallback demo authentication
+          showAlert('alertSuccess', `Welcome! Signed in as ${id} (${currentRole.toUpperCase()}) in Local Mode.`);
+        }
+      } catch (err) {
+        // Local fallback when backend isn't responding
+        showAlert('alertSuccess', `Connected locally as ${id} (${currentRole.toUpperCase()}).`);
+      } finally {
+        submitBtn.innerText = 'Sign In to Fleet Telemetry';
+        submitBtn.disabled = false;
+      }
+    }
+
+    function showAlert(elementId, message) {
+      const el = document.getElementById(elementId);
+      el.innerText = message;
+      el.style.display = 'block';
+    }
+
+    function hideAlerts() {
+      document.getElementById('alertSuccess').style.display = 'none';
+      document.getElementById('alertError').style.display = 'none';
+    }
+
+    function toggleSimSpeed() {
+      simulationSpeed = simulationSpeed === 1 ? 2 : 1;
+      document.getElementById('metricSpeed').innerText = (38 * simulationSpeed) + ' km/h';
+    }
+
+    // ==========================================================================
+    // HTML5 CANVAS 2D ANIMATION (BUS RADAR & LIVE WAYPOINTS)
+    // ==========================================================================
+    const canvas = document.getElementById('busMapCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // Corridor Coordinates
+    const stops = [
+      { name: 'Start: New Bus Stand', x: 40, y: 180 },
+      { name: '4-Roads Junction', x: 120, y: 150 },
+      { name: 'Hasthampatti', x: 220, y: 90 },
+      { name: 'Gorimedu', x: 300, y: 70 },
+      { name: 'Campus Main Gate', x: 360, y: 50 }
+    ];
+
+    let t = 0;
+
+    function renderRadarCanvas() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // 1. Draw Grid Background
+      ctx.strokeStyle = '#1e293b';
+      ctx.lineWidth = 1;
+      for (let x = 0; x < canvas.width; x += 40) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, canvas.height);
+        ctx.stroke();
+      }
+      for (let y = 0; y < canvas.height; y += 40) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(canvas.width, y);
+        ctx.stroke();
+      }
+
+      // 2. Draw Route Corridor Line
+      ctx.beginPath();
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 3;
+      ctx.setLineDash([6, 4]);
+      for (let i = 0; i < stops.length; i++) {
+        if (i === 0) ctx.moveTo(stops[i].x, stops[i].y);
+        else ctx.lineTo(stops[i].x, stops[i].y);
+      }
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // 3. Draw Bus Stops
+      for (let i = 0; i < stops.length; i++) {
+        ctx.fillStyle = '#64748b';
+        ctx.beginPath();
+        ctx.arc(stops[i].x, stops[i].y, 5, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Label
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '9px system-ui';
+        ctx.fillText(stops[i].name, stops[i].x - 20, stops[i].y + 16);
+      }
+
+      // 4. Calculate Live Bus Marker Position
+      t += 0.003 * simulationSpeed;
+      if (t > 1) t = 0;
+
+      // Piecewise linear interpolation along waypoints
+      const segmentCount = stops.length - 1;
+      const totalProgress = t * segmentCount;
+      const segIndex = Math.min(Math.floor(totalProgress), segmentCount - 1);
+      const segProgress = totalProgress - segIndex;
+
+      const p1 = stops[segIndex];
+      const p2 = stops[segIndex + 1];
+      const busX = p1.x + (p2.x - p1.x) * segProgress;
+      const busY = p1.y + (p2.y - p1.y) * segProgress;
+
+      // Pulse Radar Effect around Bus
+      ctx.beginPath();
+      ctx.strokeStyle = 'rgba(245, 158, 11, 0.4)';
+      ctx.lineWidth = 2;
+      const radarRadius = (Date.now() / 30) % 20 + 8;
+      ctx.arc(busX, busY, radarRadius, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // Bus Point
+      ctx.beginPath();
+      ctx.fillStyle = '#f59e0b';
+      ctx.arc(busX, busY, 7, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#020617';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // Bus Text Label
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 10px system-ui';
+      ctx.fillText('BUS 01', busX - 18, busY - 12);
+
+      requestAnimationFrame(renderRadarCanvas);
+    }
+
+    // Start Animation Loop on Load
+    window.addEventListener('DOMContentLoaded', () => {
+      renderRadarCanvas();
+    });
+  </script>
+</body>
+</html>
